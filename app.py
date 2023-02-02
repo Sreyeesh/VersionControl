@@ -1,6 +1,6 @@
 import os
 import sys
-
+import dropbox
 from PySide6 import QtWidgets
 from PySide6.QtWidgets import QFileDialog
 
@@ -21,10 +21,10 @@ class VersionTrackingApp(QtWidgets.QMainWindow):
         self.publish_file_button.setEnabled(False)
 
         self.approve_file_button = QtWidgets.QPushButton("Approve")
-        self.approve_file_button.clicked.connect(self.approve_file)
+        self.approve_file_button.clicked.connect(self.approve_file) #try lambda function with this 
         self.approve_file_button.setEnabled(False)
 
-        self.set_latest_file_button = QtWidgets.QPushButton("Set as Latest")
+        self.set_latest_file_button = QtWidgets.QPushButton("Current")
         self.set_latest_file_button.clicked.connect(self.set_latest_file)
         self.set_latest_file_button.setEnabled(False)
 
@@ -59,7 +59,7 @@ class VersionTrackingApp(QtWidgets.QMainWindow):
                       os.path.join(self.current_project, "published", selected_file))
             self.files_display.setPlainText("\n".join(os.listdir(self.current_project)))
 
-
+    #TODO: This is same peace of code as publish file this needs to be different
     def approve_file(self):
         selected_file = self.files_display.textCursor().selectedText()
         if selected_file:
@@ -68,11 +68,15 @@ class VersionTrackingApp(QtWidgets.QMainWindow):
             self.files_display.setPlainText("\n".join(os.listdir(self.current_project)))
 
     def set_latest_file(self):
-        selected_file = self.files_display.textCursor().selectedText()
+        selected_file = self.files_display.textCursor().selectedText().strip()
         if selected_file:
+            if '\n' in selected_file:
+                self.files_display.setPlainText("Error: invalid file name")
+                return
             os.rename(os.path.join(self.current_project, selected_file),
                       os.path.join(self.current_project, "latest", selected_file))
             self.files_display.setPlainText("\n".join(os.listdir(self.current_project)))
+
 
 
 if __name__ == "__main__":
