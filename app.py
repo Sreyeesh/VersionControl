@@ -28,19 +28,23 @@ class VersionTrackingApp(QtWidgets.QMainWindow):
         self.set_latest_file_button.clicked.connect(self.set_latest_file)
         self.set_latest_file_button.setEnabled(False)
 
-        self.files_display = QtWidgets.QPlainTextEdit()
-        self.files_display.setReadOnly(True)
+        self.file_viewer = QtWidgets.QListWidget()
 
-        self.layout = QtWidgets.QVBoxLayout()
-        self.layout.addWidget(self.select_project_button)
-        self.layout.addWidget(self.publish_file_button)
-        self.layout.addWidget(self.approve_file_button)
-        self.layout.addWidget(self.set_latest_file_button)
-        self.layout.addWidget(self.files_display)
+        self.layout = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(self.createControlsLayout())
+        self.layout.addWidget(self.file_viewer)
 
         self.central_widget = QtWidgets.QWidget()
         self.central_widget.setLayout(self.layout)
         self.setCentralWidget(self.central_widget)
+
+    def createControlsLayout(self):
+        layout = QtWidgets.QVBoxLayout()
+        layout.addWidget(self.select_project_button)
+        layout.addWidget(self.publish_file_button)
+        layout.addWidget(self.approve_file_button)
+        layout.addWidget(self.set_latest_file_button)
+        return layout
 
     def select_project(self):
         options = QFileDialog.Options()
@@ -50,7 +54,8 @@ class VersionTrackingApp(QtWidgets.QMainWindow):
             self.publish_file_button.setEnabled(True)
             self.approve_file_button.setEnabled(True)
             self.set_latest_file_button.setEnabled(True)
-            self.files_display.setPlainText("\n".join(os.listdir(self.current_project)))
+            self.file_viewer.clear()
+            self.file_viewer.addItems(os.listdir(self.current_project))
 
     def publish_file(self):
         selected_file = self.files_display.textCursor().selectedText()
